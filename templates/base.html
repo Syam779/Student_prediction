@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Analytics Dashboard</title>
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- ICONS -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- RESPONSIVE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>Student Analytics</h2>
+
+    <a href="/"><i class="fa fa-home"></i> Home</a>
+    <a href="/predict"><i class="fa fa-chart-line"></i> Prediction </a>
+    <a href="/insights"><i class="fa fa-magnifying-glass-chart"></i> Deep Insights</a>
+    <a href="/trends"><i class="fa fa-clock"></i> Trends</a>
+</div>
+
+<div class="main">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- KPI ANIMATION (SAFE) -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".kpi-card h3").forEach(el => {
+        const raw = el.dataset.value;
+        if (!raw) return;
+
+        const target = parseFloat(raw);
+        let current = 0;
+        const step = target / 40;
+
+        const interval = setInterval(() => {
+            current += step;
+            if (current >= target) {
+                el.innerText = target;
+                clearInterval(interval);
+            } else {
+                el.innerText = current.toFixed(1);
+            }
+        }, 20);
+    });
+});
+</script>
+
+</body>
+</html>

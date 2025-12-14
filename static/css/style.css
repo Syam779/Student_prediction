@@ -1,0 +1,780 @@
+/* =========================
+   WIX-ALIGNED DESIGN SYSTEM
+========================= */
+:root {
+    --bg: #f6f4ef;
+
+    --card: #ffffff;
+
+    --primary: #1f3a5f;
+    --primary-soft: #2b4c77;
+
+    --accent: #d6b36a;
+    --accent-soft: #f3e6c8;
+
+    --muted: #6b7280;
+
+    --success: #4caf50;
+    --warning: #f0ad4e;
+    --danger: #e5533d;
+}
+
+
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+    box-sizing: border-box;
+    font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--primary);
+}
+
+/* =========================
+   SIDEBAR (WIX STYLE)
+========================= */
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    position: fixed;
+    background: var(--accent-soft);
+    padding: 28px 18px;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 36px;
+    font-weight: 700;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--primary);
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.sidebar a:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+.main {
+    margin-left: 260px;
+    padding: 40px;
+}
+
+/* =========================
+   CARDS
+========================= */
+.card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+    animation: fadeUp 0.6s ease both;
+}
+
+.card h2, .card h3 {
+    margin-top: 0;
+}
+
+p {
+    line-height: 1.7;
+    color: #444;
+}
+
+/* =========================
+   KPI GRID
+========================= */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    margin-bottom: 36px;
+}
+
+.kpi-card {
+    background: var(--accent-soft);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.kpi-card span {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.kpi-card h3 {
+    margin-top: 10px;
+    font-size: 34px;
+    font-weight: 700;
+}
+
+/* =========================
+   FORMS
+========================= */
+label {
+    display: block;
+    font-weight: 600;
+    margin-top: 22px;
+    margin-bottom: 6px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+/* =========================
+   RANGE SLIDERS (FIXED)
+========================= */
+input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+}
+
+output {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+button {
+    background: var(--accent);
+    color: #1a1a1a;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 28px;
+}
+
+button:hover {
+    background: #d4b24f;
+}
+
+/* =========================
+   BADGES
+========================= */
+.badge {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.good {
+    background: #e4f3e8;
+    color: var(--success);
+}
+
+.bad {
+    background: #fbe4e4;
+    color: var(--danger);
+}
+
+/* =========================
+   PROGRESS BAR
+========================= */
+.progress-bar {
+    height: 16px;
+    background: #f0f0f0;
+}
+
+.good-bar {
+    background: linear-gradient(90deg, #6fbf73, #4caf50);
+}
+
+.warning-bar {
+    background: linear-gradient(90deg, #f5c06a, #f0ad4e);
+}
+
+.bad-bar {
+    background: linear-gradient(90deg, #ef7a7a, #e5533d);
+}
+
+
+.progress-fill {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: white;
+}
+
+
+
+/* =========================
+   CHART CONTAINER
+========================= */
+.chart {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+/* =========================
+   GRID SECTIONS
+========================= */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 26px;
+    margin-bottom: 36px;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   SLIDER (WIX-STYLE)
+========================= */
+.slider-group {
+    margin-top: 22px;
+}
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.slider-value {
+    min-width: 40px;
+    text-align: right;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* RESET DEFAULT */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 8px;
+    background: #e6e6e6;
+    outline: none;
+}
+
+/* TRACK */
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 8px;
+    background: linear-gradient(
+        to right,
+        var(--accent) 0%,
+        var(--accent) var(--percent),
+        #e6e6e6 var(--percent),
+        #e6e6e6 100%
+    );
+}
+
+/* THUMB */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    margin-top: -5px;
+}
+
+/* FIREFOX */
+input[type="range"]::-moz-range-track {
+    height: 8px;
+    background: #e6e6e6;
+    border-radius: 8px;
+}
+
+input[type="range"]::-moz-range-thumb {
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+}
+
+
+/* =========================
+   RESULT CARD – EMPHASIS
+========================= */
+.result-card {
+    border-left: 6px solid var(--accent);
+    background: linear-gradient(180deg, #ffffff, #fafafa);
+    box-shadow: 0 18px 45px rgba(0,0,0,0.08);
+    animation: popIn 0.6s ease both;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.97) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.download-btn {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 12px 20px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.download-btn:hover {
+    background: #162c46;
+}
+
+/* =========================
+   RESULT CARD UPGRADE
+========================= */
+.result-card {
+    border-left: 6px solid var(--accent);
+}
+
+.result-title {
+    margin-bottom: 20px;
+}
+
+.score-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.score-label {
+    color: var(--muted);
+    margin-bottom: 4px;
+}
+
+.score-value {
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.score-badge {
+    margin-left: 10px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.section-title {
+    margin: 28px 0 12px;
+}
+
+/* BARS */
+.bar-row {
+    margin-bottom: 14px;
+}
+
+.bar-row span {
+    font-size: 14px;
+}
+
+.bar-bg {
+    background: #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.bar-fill {
+    height: 26px;
+    background: linear-gradient(90deg, #52796f, #84a98c);
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* COMPARISON */
+.compare-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.compare-list li {
+    margin-bottom: 8px;
+}
+
+.compare-list li.up::before {
+    content: "▲ ";
+    color: green;
+}
+
+.compare-list li.down::before {
+    content: "▼ ";
+    color: red;
+}
+
+/* RECOMMENDATION */
+.recommend-box {
+    margin-top: 26px;
+    padding: 18px;
+    background: #f9f5ec;
+    border-radius: 14px;
+}
+
+/* =========================
+   SLIDER VALUE BADGE
+========================= */
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.slider-value-badge {
+    min-width: 46px;
+    text-align: center;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    background: linear-gradient(135deg, var(--accent), #f1c27d);
+    color: #1a1a1a;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* Optional subtle pulse on change */
+.slider-value-badge.updated {
+    animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    to { transform: scale(1); }
+}
+
+/* =======================
+   INTERACTIVE ENHANCEMENTS (REFINED)
+======================= */
+
+.hero-card {
+    position: relative;
+    background: linear-gradient(
+        135deg,
+        #e6c27a 0%,
+        #d6b36a 55%,
+        #c9a65d 100%
+    );
+    padding: 46px;
+    margin-bottom: 56px;
+    border-radius: 26px;
+    color: #1f3a5f;
+    overflow: hidden;
+}
+
+/* soft highlight overlay */
+.hero-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.35),
+        rgba(255,255,255,0)
+    );
+    pointer-events: none;
+}
+
+.hero-card h1 {
+    font-size: 30px;
+    margin-bottom: 12px;
+    font-weight: 700;
+    color: #1f3a5f;
+}
+
+.hero-card p {
+    color: #3b4a5a;
+    font-size: 15px;
+    max-width: 720px;
+    line-height: 1.6;
+}
+
+/* CTA Buttons */
+.hero-actions {
+    margin-top: 22px;
+}
+
+.btn-primary,
+.btn-secondary {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-right: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #1a1a1a;
+}
+
+.btn-secondary {
+    background: rgba(255,255,255,0.18);
+    color: #ffffff;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+
+
+/* =========================
+   KPI DASHBOARD (FINAL)
+========================= */
+
+.kpi-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 32px;                 /* CLEAN, AIRY GAP */
+    margin: 32px 0 56px;       /* SPACE FROM HEADER & NEXT SECTION */
+}
+
+.kpi-tile {
+    background: var(--card);
+    padding: 28px 24px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kpi-tile:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 45px rgba(0,0,0,0.14);
+}
+
+/* ICON */
+.kpi-icon {
+    font-size: 28px;
+    margin-bottom: 6px;
+}
+
+/* NUMBER */
+.kpi-tile h3 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 10px 0 6px;
+    color: var(--primary);
+}
+
+/* LABEL */
+.kpi-tile p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+}
+
+/* HIGHLIGHT KPI (HIGH PERFORMERS) */
+.kpi-tile.highlight {
+    background: linear-gradient(
+        135deg,
+        #f3e6c8 0%,
+        #e6c27a 60%,
+        #d6b36a 100%
+    );
+    color: #1f3a5f;
+}
+
+/* Feature Cards */
+.feature-card {
+    background: var(--card);
+    padding: 24px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 45px rgba(0,0,0,0.12);
+}
+
+/* Section Titles */
+.section-title h2 {
+    font-size: 26px;
+    margin-bottom: 18px;
+}
+
+/* Clean lists */
+.clean-list {
+    padding-left: 18px;
+}
+
+.clean-list li {
+    margin-bottom: 10px;
+}
+
+/* Footer note */
+.footer-note {
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+
+/* =========================
+   DASHBOARD HOME STYLE
+========================= */
+
+.dashboard-header {
+    background: linear-gradient(
+        135deg,
+        #f3e6c8 0%,
+        #e6c27a 55%,
+        #d6b36a 100%
+    );
+    color: #1f3a5f;
+    border-radius: 26px;
+    padding: 42px;
+    margin-bottom: 48px;
+    box-shadow: 0 14px 36px rgba(0,0,0,0.08);
+}
+
+/* subtitle */
+.dashboard-header .muted {
+    color: #3b4a5a;
+    opacity: 0.9;
+}
+
+
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.status-row {
+    margin-bottom: 16px;
+}
+
+.status-bar {
+    background: #eee;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.status-fill {
+    padding: 6px 10px;
+    font-size: 13px;
+    color: white;
+}
+
+.status-fill.good { background: #4caf50; }
+.status-fill.warning { background: #f0ad4e; }
+.status-fill.danger { background: #d9534f; }
+
+.action-btn {
+    display: block;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #1a1a1a;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-4px);
+}
+
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.module-card {
+    background: #f7f7f7;
+    padding: 18px;
+    border-radius: 14px;
+}
+
+
+
+.card h3 {
+    margin-bottom: 20px;
+}
+
+.card .progress-bar {
+    margin-bottom: 22px;
+}
+
+/* =========================
+   SECTION HEADER (BETWEEN HERO & KPI)
+========================= */
+.section-header {
+    margin: 24px 0 32px;
+    padding-left: 4px;
+}
+
+.section-header h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 6px;
+}
+
+.section-header p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+}

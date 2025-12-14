@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =========================
+     PREDICTION INPUT CARD
+========================= -->
+<div class="card">
+  <h2>🎯 Prediction & What-If Analysis</h2>
+
+  <p style="color:var(--muted)">
+    Adjust student behaviour factors below to predict academic performance
+    and explore <b>what-if scenarios</b> using a trained machine learning model.
+  </p>
+
+  {% if prediction %}
+  <h4>🧾 Prediction Summary</h4>
+  <p style="color:var(--muted); margin-bottom:16px;">
+    Based on the selected behavioural inputs, the model predicts that this
+    student is <b>{{ prediction }}</b> with a confidence of
+    <b>{{ probability }}%</b>.
+    The overall behaviour score indicates a
+    <b>{{ risk_level }}</b> academic performance profile.
+  </p>
+  {% endif %}
+
+  <form method="POST" action="#result">
+
+    <!-- Study Hours -->
+    <div class="slider-group">
+      <label>📘 Study Hours per Week</label>
+      <div class="slider-row">
+        <input type="range" name="StudyHours" min="0" max="40" value="10">
+        <span class="slider-value">10</span>
+      </div>
+    </div>
+
+    <!-- Attendance -->
+    <div class="slider-group">
+      <label>🏫 Attendance (%)</label>
+      <div class="slider-row">
+        <input type="range" name="Attendance" min="0" max="100" value="80">
+        <span class="slider-value">80</span>
+      </div>
+    </div>
+
+    <!-- Assignment Completion -->
+    <div class="slider-group">
+      <label>📝 Assignment Completion (%)</label>
+      <div class="slider-row">
+        <input type="range" name="AssignmentCompletion" min="0" max="100" value="70">
+        <span class="slider-value">70</span>
+      </div>
+    </div>
+
+    <!-- Motivation -->
+    <div class="slider-group">
+      <label>🔥 Motivation Level (1–10)</label>
+      <div class="slider-row">
+        <input type="range" name="Motivation" min="1" max="10" value="6">
+        <span class="slider-value">6</span>
+      </div>
+    </div>
+
+    <!-- Stress -->
+    <div class="slider-group">
+      <label>😵 Stress Level (1–10)</label>
+      <div class="slider-row">
+        <input type="range" name="StressLevel" min="1" max="10" value="5">
+        <span class="slider-value">5</span>
+      </div>
+    </div>
+
+    <!-- Extracurricular -->
+    <label>🎭 Extracurricular Activities</label>
+    <select name="Extracurricular">
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+
+    <!-- Online Courses -->
+    <label>💻 Online Courses</label>
+    <select name="OnlineCourses">
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+
+    <button type="submit">🔍 Predict Performance</button>
+  </form>
+</div>
+
+<!-- =========================
+     RESULT SECTION (UPGRADED)
+========================= -->
+{% if prediction %}
+<div class="card result-card" id="result">
+
+  <!-- HEADER -->
+  <h3 class="result-title">🧠 Behaviour Analysis Summary</h3>
+
+  <!-- MODEL CONFIDENCE -->
+  <p><b>Model Confidence:</b> {{ probability }}%</p>
+
+  <div class="progress-bar">
+    <div id="probBar"
+         class="progress-fill {{ 'good-bar' if probability >= 65 else 'bad-bar' }}"
+         data-value="{{ probability }}">
+      0%
+    </div>
+  </div>
+
+  <!-- SCORE -->
+  <div class="score-row" style="margin-top:24px">
+    <div>
+      <p class="score-label">Behaviour Score</p>
+      <h2 class="score-value">
+        {{ score }}/100
+        <span class="score-badge {{ 'good' if score>=65 else 'bad' }}">
+          {{ risk_level }}
+        </span>
+      </h2>
+    </div>
+  </div>
+
+  <!-- CONTRIBUTION -->
+  <h4 class="section-title">📌 Factor Contribution</h4>
+
+  {% for k,v in breakdown.items() %}
+  <div class="bar-row">
+    <span>{{ k }}</span>
+    <div class="bar-bg">
+      <div class="bar-fill" data-percent="{{ (v/25)*100 }}">
+        {{ v }}/25
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- COMPARISON -->
+  {% if benchmark %}
+  <h4 class="section-title">📊 Compared to Average Student</h4>
+  <ul class="compare-list">
+    {% for k,v in benchmark.items() %}
+    <li class="{{ 'up' if v>=0 else 'down' }}">
+      {{ k }}:
+      <b>{{ "+" if v>=0 else "" }}{{ v }}</b>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <!-- RECOMMENDATIONS -->
+  {% if advice %}
+  <div class="recommend-box">
+    <h4>🚀 Recommended Actions</h4>
+    <ul>
+      {% for tip in advice %}
+      <li>{{ tip }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+</div>
+{% endif %}
+
+<!-- =========================
+     SLIDER VALUE SYNC
+========================= -->
+<script>
+document.querySelectorAll(".slider-row").forEach(row => {
+  const slider = row.querySelector("input[type=range]");
+  const value = row.querySelector(".slider-value");
+
+  value.textContent = slider.value;
+  slider.addEventListener("input", () => {
+    value.textContent = slider.value;
+  });
+});
+</script>
+
+<!-- =========================
+     PROGRESS BAR ANIMATION
+========================= -->
+<script>
+(function () {
+  const bar = document.getElementById("probBar");
+  if (!bar) return;
+
+  const target = parseFloat(bar.dataset.value);
+  let current = 0;
+  const step = target / 40;
+
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) {
+      bar.style.width = target + "%";
+      bar.textContent = target + "%";
+      clearInterval(timer);
+    } else {
+      bar.style.width = current + "%";
+      bar.textContent = current.toFixed(1) + "%";
+    }
+  }, 20);
+})();
+</script>
+
+<script>
+document.querySelectorAll(".bar-fill").forEach(bar => {
+  const percent = bar.dataset.percent;
+  bar.style.width = percent + "%";
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".slider-row").forEach(row => {
+    const slider = row.querySelector("input[type=range]");
+    const badge = row.querySelector(".slider-value-badge");
+
+    if (!slider || !badge) return;
+
+    function update() {
+      badge.textContent = slider.value;
+      badge.classList.add("updated");
+      setTimeout(() => badge.classList.remove("updated"), 200);
+    }
+
+    slider.addEventListener("input", update);
+    update(); // initialize on load
+  });
+});
+</script>
+
+{% endblock %}

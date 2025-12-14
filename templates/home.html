@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =========================
+   DASHBOARD HEADER
+========================= -->
+<div class="card dashboard-header">
+  <h2>📊 Student Performance Dashboard</h2>
+  <p class="muted">
+    Overview of student performance indicators and system analytics
+  </p>
+</div>
+
+<!-- SECTION TITLE: DATA -->
+<div class="section-header">
+  <h3>📌 Performance Data Overview</h3>
+  <p>
+    Key academic indicators summarised from student records
+  </p>
+</div>
+
+<!-- =========================
+   KPI GRID
+========================= -->
+<div class="kpi-dashboard">
+
+  <div class="kpi-tile">
+    <span class="kpi-icon">👨‍🎓</span>
+    <h3>{{ kpi.total }}</h3>
+    <p>Total Students</p>
+  </div>
+
+  <div class="kpi-tile">
+    <span class="kpi-icon">📈</span>
+    <h3>{{ kpi.avg_grade }}</h3>
+    <p>Average Grade</p>
+  </div>
+
+  <div class="kpi-tile">
+    <span class="kpi-icon">🏫</span>
+    <h3>{{ kpi.avg_attendance }}%</h3>
+    <p>Average Attendance</p>
+  </div>
+
+  <div class="kpi-tile highlight">
+    <span class="kpi-icon">⭐</span>
+    <h3>{{ kpi.high_performers }}</h3>
+    <p>High Performers</p>
+  </div>
+
+</div>
+
+
+<!-- =========================
+   SYSTEM STATUS SECTION
+========================= -->
+<div class="grid-2">
+
+  <div class="card">
+    <h4>🧠 Behaviour Insights</h4>
+
+    <div class="status-row">
+      <span>Study Engagement</span>
+      <div class="status-bar">
+        <div class="status-fill good" style="width:75%">75%</div>
+      </div>
+    </div>
+
+    <div class="status-row">
+      <span>Attendance Consistency</span>
+      <div class="status-bar">
+        <div class="status-fill warning" style="width:60%">60%</div>
+      </div>
+    </div>
+
+    <div class="status-row">
+      <span>Stress Management</span>
+      <div class="status-bar">
+        <div class="status-fill danger" style="width:45%">45%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>📌 Quick Actions</h4>
+
+    <a href="/predict" class="action-btn">🔍 Predict Performance</a>
+    <a href="/insights" class="action-btn">📊 Deep Insights</a>
+    <a href="/trends" class="action-btn">📈 View Trends</a>
+  </div>
+
+</div>
+
+<!-- =========================
+   MODULE OVERVIEW (LIKE SERVICES)
+========================= -->
+<div class="card">
+  <h4>🧩 System Modules</h4>
+
+  <div class="module-grid">
+
+    <div class="module-card">
+      <h5>Prediction Engine</h5>
+      <p>Machine learning model for academic performance classification</p>
+    </div>
+
+    <div class="module-card">
+      <h5>What-If Analysis</h5>
+      <p>Simulate behavioural changes and observe performance impact</p>
+    </div>
+
+    <div class="module-card">
+      <h5>Data Insights</h5>
+      <p>Interactive visual analytics and correlation exploration</p>
+    </div>
+
+    <div class="module-card">
+      <h5>Trend Analysis</h5>
+      <p>Time-based monitoring of student performance patterns</p>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

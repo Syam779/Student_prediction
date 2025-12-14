@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card">
+  <h2>📈 Student Performance Trends</h2>
+  <p style="color:var(--muted)">
+    Explore how student performance metrics evolve over time and
+    compare High Performers with other students.
+  </p>
+</div>
+
+<!-- =====================
+     FILTER CONTROLS
+===================== -->
+<div class="card">
+  <form method="POST" class="grid">
+
+    <div>
+      <label>📊 Metric</label>
+      <select name="metric">
+        {% for k,v in metrics.items() %}
+          <option value="{{ k }}" {% if k==metric %}selected{% endif %}>
+            {{ v }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label>🧮 Aggregation</label>
+      <select name="aggregation">
+        <option value="mean" {% if aggregation=='mean' %}selected{% endif %}>Mean</option>
+        <option value="median" {% if aggregation=='median' %}selected{% endif %}>Median</option>
+        <option value="sum" {% if aggregation=='sum' %}selected{% endif %}>Sum</option>
+      </select>
+    </div>
+
+    <div style="align-self:end">
+      <button type="submit">Update Trend</button>
+    </div>
+
+  </form>
+</div>
+
+<!-- =====================
+     TREND CHART
+===================== -->
+<div class="card">
+  {{ fig|safe }}
+</div>
+
+<!-- =====================
+     INTERPRETATION
+===================== -->
+<div class="card">
+  <h3>🧠 Interpretation</h3>
+  <p>{{ interpretation }}</p>
+
+  <ul>
+    <li>High performers maintain more stable trends</li>
+    <li>Lower trends may indicate behavioural risks</li>
+    <li>Time-based analysis supports early intervention strategies</li>
+  </ul>
+</div>
+
+{% endblock %}

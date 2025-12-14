@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =========================
+     PAGE HEADER
+========================= -->
+<div class="card dashboard-header">
+  <h2>📊 Deep Insights & Analytics</h2>
+  <p class="muted">
+    Explore relationships between student behaviour and academic performance
+    using interactive visual analytics.
+  </p>
+</div>
+
+<!-- =========================
+     KPI SECTION
+========================= -->
+<div class="kpi-grid">
+
+  <div class="kpi-card">
+    <span>Average Final Grade</span>
+    <h3 class="kpi-value" data-value="{{ kpi.avg_grade }}">0</h3>
+  </div>
+
+  <div class="kpi-card">
+    <span>High Performers (%)</span>
+    <h3 class="kpi-value" data-value="{{ kpi.high_pct }}">0</h3>
+  </div>
+
+  <div class="kpi-card">
+    <span>Average Attendance (%)</span>
+    <h3 class="kpi-value" data-value="{{ kpi.avg_att }}">0</h3>
+  </div>
+
+  <div class="kpi-card highlight">
+    <span>Average Study Hours</span>
+    <h3 class="kpi-value" data-value="{{ kpi.avg_study }}">0</h3>
+  </div>
+
+</div>
+
+<!-- =========================
+     INTERACTIVE CONTROLS
+========================= -->
+<div class="card">
+  <h3>🎛️ Interactive Chart Controls</h3>
+
+  <form method="POST" class="grid">
+    <input type="hidden" name="submitted" value="1">
+
+
+    <div>
+      <label>X-Axis</label>
+      <select name="x_axis">
+        {% for c in columns %}
+          <option value="{{ c }}" {% if x_axis == c %}selected{% endif %}>
+            {{ c }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label>Y-Axis</label>
+      <select name="y_axis">
+        {% for c in columns %}
+          <option value="{{ c }}" {% if y_axis == c %}selected{% endif %}>
+            {{ c }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label>Chart Type</label>
+      <select name="chart_type">
+        <option value="Scatter" {% if chart_type == "Scatter" %}selected{% endif %}>Scatter</option>
+        <option value="Box" {% if chart_type == "Box" %}selected{% endif %}>Box Plot</option>
+        <option value="Histogram" {% if chart_type == "Histogram" %}selected{% endif %}>Histogram</option>
+      </select>
+    </div>
+
+    <div style="align-self:end">
+      <button type="submit">🔄 Update Chart</button>
+    </div>
+
+  </form>
+</div>
+
+<!-- =========================
+     VISUAL ANALYSIS TITLE
+========================= -->
+<div class="section-header">
+  <h3>📈 Visual Analysis</h3>
+  <p>Generated dynamically based on selected variables</p>
+</div>
+
+<!-- =========================
+     MAIN VISUALIZATION
+========================= -->
+{% if submitted %}
+
+<div class="card" id="chart-section">
+  <h3>📈 Behaviour vs Performance</h3>
+  {{ fig | safe }}
+</div>
+{% endif %}
+
+<!-- =========================
+     CORRELATION HEATMAP
+========================= -->
+{% if heatmap %}
+<div class="card">
+  <h3>🔥 Feature Correlation Heatmap</h3>
+  <p class="muted">
+    Shows strength and direction of relationships between variables.
+  </p>
+  <div class="chart">
+    {{ heatmap | safe }}
+  </div>
+</div>
+{% endif %}
+
+<!-- =========================
+     INTERPRETATION
+========================= -->
+<div class="grid">
+
+  <div class="card">
+    <h3>🧠 Key Observations</h3>
+    <ul class="clean-list">
+      <li>Study Hours and Attendance show strong positive correlation with grades</li>
+      <li>High stress levels negatively impact academic performance</li>
+      <li>Assignment completion is a critical success factor</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Academic Implications</h3>
+    <ul class="clean-list">
+      <li>Attendance above 80% significantly improves outcomes</li>
+      <li>Consistent study habits outperform last-minute preparation</li>
+      <li>Balanced stress management enhances learning effectiveness</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- =========================
+     KPI ANIMATION
+========================= -->
+<script>
+document.querySelectorAll(".kpi-value").forEach(el => {
+  const target = parseFloat(el.dataset.value);
+  let current = 0;
+  const step = target / 40;
+
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) {
+      el.innerText = target.toFixed(1);
+      clearInterval(timer);
+    } else {
+      el.innerText = current.toFixed(1);
+    }
+  }, 20);
+});
+</script>
+
+<script>
+window.addEventListener("load", () => {
+  const chart = document.getElementById("chart-section");
+  if (!chart) return;
+
+  const submitted = chart.dataset.submitted === "true";
+  if (!submitted) return;
+
+  chart.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+});
+</script>
+
+{% endblock %}

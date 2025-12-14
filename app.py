@@ -4,6 +4,9 @@ import numpy as np
 import plotly.express as px
 import joblib, json, os
 
+# =========================
+# APP SETUP
+# =========================
 app = Flask(__name__)
 
 # =========================
@@ -23,7 +26,7 @@ with open(os.path.join(MODEL_DIR, "model_features.json")) as f:
     FEATURES = json.load(f)
 
 # =========================
-# HOME
+# HOME (ROOT PAGE)
 # =========================
 @app.route("/")
 def home():
@@ -43,8 +46,8 @@ def predict():
     prediction = probability = score = risk_level = None
     advice = []
     breakdown = {}
-    benchmark = {}          # ✅ FIX: define early
-    form_values = {}        # keep slider values
+    benchmark = {}
+    form_values = {}
 
     avg = df.mean(numeric_only=True)
 
@@ -84,14 +87,12 @@ def predict():
             "At Risk"
         )
 
-        # ✅ Benchmark comparison
         benchmark = {
             "Study Hours": round(values["StudyHours"] - avg["StudyHours"], 1),
             "Attendance": round(values["Attendance"] - avg["Attendance"], 1),
             "Assignment Completion": round(values["AssignmentCompletion"] - avg["AssignmentCompletion"], 1),
         }
 
-        # ✅ Advice
         if values["StudyHours"] < avg["StudyHours"]:
             advice.append("Increase weekly study hours.")
         if values["Attendance"] < 80:
@@ -113,16 +114,11 @@ def predict():
         form_values=form_values
     )
 
-
-
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from flask import send_file
-import io
-
+# =========================
+# INSIGHTS
+# =========================
 @app.route("/insights", methods=["GET", "POST"])
 def insights():
-
     df_i = df.copy()
     df_i["HighPerformer"] = df_i["FinalGrade"] >= 75
 
@@ -135,7 +131,6 @@ def insights():
         "FinalGrade"
     ]
 
-    # ✅ KPI ALWAYS EXISTS (IMPORTANT)
     kpi = {
         "avg_grade": round(df_i["FinalGrade"].mean(), 2),
         "high_pct": round((df_i["FinalGrade"] >= 75).mean() * 100, 2),
@@ -143,9 +138,7 @@ def insights():
         "avg_study": round(df_i["StudyHours"].mean(), 2),
     }
 
-    # Defaults
-    fig = None
-    heatmap = None
+    fig = heatmap = None
     submitted = False
 
     x_axis = "StudyHours"
@@ -166,13 +159,9 @@ def insights():
         else:
             fig = px.scatter(df_i, x=x_axis, y=y_axis, color="HighPerformer")
 
-        fig.update_layout(template="plotly_white")
         fig = fig.to_html(full_html=False)
 
-        heatmap = px.imshow(
-            df_i[numeric_cols].corr(),
-            color_continuous_scale="RdBu"
-        )
+        heatmap = px.imshow(df_i[numeric_cols].corr(), color_continuous_scale="RdBu")
         heatmap = heatmap.to_html(full_html=False)
 
     return render_template(
@@ -193,8 +182,6 @@ def insights():
 @app.route("/trends", methods=["GET", "POST"])
 def trends():
     df_t = df.copy()
-
-    # ---- Simulated time periods (defensible for non-time dataset)
     df_t["Period"] = (np.arange(len(df_t)) // 50) + 1
     df_t["HighPerformer"] = df_t["FinalGrade"] >= 75
 
@@ -210,54 +197,20 @@ def trends():
     metric = request.form.get("metric", "FinalGrade")
     aggregation = request.form.get("aggregation", "mean")
 
-    if metric not in METRICS:
-        metric = "FinalGrade"
-
-    # ---- Aggregation logic
     if aggregation == "median":
-        trend_df = df_t.groupby(
-            ["Period", "HighPerformer"]
-        )[metric].median().reset_index()
+        trend_df = df_t.groupby(["Period", "HighPerformer"])[metric].median().reset_index()
     elif aggregation == "sum":
-        trend_df = df_t.groupby(
-            ["Period", "HighPerformer"]
-        )[metric].sum().reset_index()
+        trend_df = df_t.groupby(["Period", "HighPerformer"])[metric].sum().reset_index()
     else:
-        trend_df = df_t.groupby(
-            ["Period", "HighPerformer"]
-        )[metric].mean().reset_index()
+        trend_df = df_t.groupby(["Period", "HighPerformer"])[metric].mean().reset_index()
 
-    # ---- Plot
     fig = px.line(
         trend_df,
         x="Period",
         y=metric,
         color="HighPerformer",
         markers=True,
-        labels={
-            "HighPerformer": "Student Group",
-            "Period": "Time Period",
-            metric: METRICS[metric]
-        },
-        title=f"{METRICS[metric]} Trend Over Time ({aggregation.capitalize()})",
-        template="plotly_white"
-    )
-
-    fig.update_layout(
-        transition_duration=900,
-        hovermode="x unified",
-        legend_title_text="Performance Group"
-    )
-
-    fig.update_traces(
-        line=dict(width=3),
-        marker=dict(size=7)
-    )
-
-    interpretation = (
-        f"This chart shows how {METRICS[metric].lower()} changes over time. "
-        f"High performers (≥75) consistently maintain stronger trends, "
-        f"indicating stable academic behaviour patterns."
+        title=f"{METRICS[metric]} Trend Over Time"
     )
 
     return render_template(
@@ -265,12 +218,11 @@ def trends():
         fig=fig.to_html(full_html=False),
         metric=metric,
         aggregation=aggregation,
-        metrics=METRICS,
-        interpretation=interpretation
+        metrics=METRICS
     )
 
 # =========================
-# RUN APP (LAST LINE ONLY)
+# LOCAL RUN (Render uses gunicorn)
 # =========================
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

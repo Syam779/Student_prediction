@@ -29,13 +29,8 @@ with open(os.path.join(MODEL_DIR, "model_features.json")) as f:
 # HELPER: ESTIMATE EXAM SCORE
 # =========================
 def estimate_exam_score(behaviour_score):
-    """
-    Map behaviour score (0–100) to expected exam score
-    using real dataset distribution.
-    """
     low = df["FinalGrade"].quantile(0.10)
     high = df["FinalGrade"].quantile(0.90)
-
     est = low + (behaviour_score / 100) * (high - low)
     return round(float(est), 1)
 
@@ -64,7 +59,6 @@ def predict():
     form_values = {}
 
     current_exam_score = improved_exam_score = improved_score = None
-
     avg = df.mean(numeric_only=True)
 
     if request.method == "POST":
@@ -79,17 +73,11 @@ def predict():
         X = np.array(data).reshape(1, -1)
         pred = model.predict(X)[0]
 
-        if hasattr(model, "predict_proba"):
-            prob = model.predict_proba(X)[0][1]
-        else:
-            prob = 0.0
+        prob = model.predict_proba(X)[0][1] if hasattr(model, "predict_proba") else 0
 
         prediction = "High Performer" if pred == 1 else "Not High Performer"
         probability = round(prob * 100, 2)
 
-        # -------------------------
-        # Behaviour Score
-        # -------------------------
         breakdown = {
             "Study Hours": round((values["StudyHours"] / 20) * 25, 1),
             "Attendance": round((values["Attendance"] / 100) * 25, 1),
@@ -106,18 +94,6 @@ def predict():
             "At Risk"
         )
 
-        # -------------------------
-        # Benchmark Comparison
-        # -------------------------
-        benchmark = {
-            "Study Hours": round(values["StudyHours"] - avg["StudyHours"], 1),
-            "Attendance": round(values["Attendance"] - avg["Attendance"], 1),
-            "Assignment Completion": round(values["AssignmentCompletion"] - avg["AssignmentCompletion"], 1),
-        }
-
-        # -------------------------
-        # Recommendations
-        # -------------------------
         if values["StudyHours"] < avg["StudyHours"]:
             advice.append("Increase weekly study hours.")
         if values["Attendance"] < 80:
@@ -127,31 +103,22 @@ def predict():
         if values["StressLevel"] > 7:
             advice.append("Reduce stress through time management.")
 
-        # -------------------------
-        # WHAT-IF SIMULATION
-        # -------------------------
         improved_values = values.copy()
-
         if "Increase weekly study hours." in advice:
             improved_values["StudyHours"] = min(values["StudyHours"] + 5, 40)
-
         if "Improve class attendance." in advice:
             improved_values["Attendance"] = max(values["Attendance"], 90)
-
         if "Submit assignments more consistently." in advice:
             improved_values["AssignmentCompletion"] = max(values["AssignmentCompletion"], 85)
-
         if "Reduce stress through time management." in advice:
             improved_values["StressLevel"] = max(values["StressLevel"] - 2, 1)
 
-        improved_breakdown = {
-            "Study Hours": round((improved_values["StudyHours"] / 20) * 25, 1),
-            "Attendance": round((improved_values["Attendance"] / 100) * 25, 1),
-            "Assignments": round((improved_values["AssignmentCompletion"] / 100) * 25, 1),
-            "Stress Management": round(((10 - improved_values["StressLevel"]) / 10) * 25, 1),
-        }
-
-        improved_score = round(sum(improved_breakdown.values()), 1)
+        improved_score = round(sum([
+            (improved_values["StudyHours"] / 20) * 25,
+            (improved_values["Attendance"] / 100) * 25,
+            (improved_values["AssignmentCompletion"] / 100) * 25,
+            ((10 - improved_values["StressLevel"]) / 10) * 25
+        ]), 1)
 
         current_exam_score = estimate_exam_score(score)
         improved_exam_score = estimate_exam_score(improved_score)
@@ -163,7 +130,6 @@ def predict():
         score=score,
         risk_level=risk_level,
         breakdown=breakdown,
-        benchmark=benchmark,
         advice=advice,
         form_values=form_values,
         current_exam_score=current_exam_score,
@@ -172,7 +138,41 @@ def predict():
     )
 
 # =========================
-# LOCAL RUN
+# DEEP INSIGHTS
+# =========================
+@app.route("/insights")
+def insights():
+    feature_importance = pd.Series(
+        model.feature_importances_, index=FEATURES
+    ).sort_values(ascending=False)
+
+    fig = px.bar(
+        feature_importance,
+        title="Feature Importance",
+        labels={"value": "Importance", "index": "Feature"}
+    )
+
+    chart = fig.to_html(full_html=False)
+
+    return render_template("insights.html", chart=chart)
+
+# =========================
+# TRENDS
+# =========================
+@app.route("/trends")
+def trends():
+    fig = px.histogram(
+        df,
+        x="FinalGrade",
+        nbins=20,
+        title="Distribution of Final Grades"
+    )
+
+    chart = fig.to_html(full_html=False)
+    return render_template("trends.html", chart=chart)
+
+# =========================
+# RUN APP
 # =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

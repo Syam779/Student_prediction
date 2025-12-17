@@ -37,6 +37,14 @@ def home():
         "high_performers": int((df["FinalGrade"] >= 75).sum())
     }
     return render_template("home.html", kpi=kpi)
+# =========================
+# HELPER: ESTIMATE EXAM SCORE
+# =========================
+def estimate_exam_score(behaviour_score):
+    low = df["FinalGrade"].quantile(0.10)
+    high = df["FinalGrade"].quantile(0.90)
+    est = low + (behaviour_score / 100) * (high - low)
+    return round(float(est), 1)
 
 # =========================
 # PREDICTION (ML)
@@ -240,4 +248,5 @@ def trends():
 # =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
 

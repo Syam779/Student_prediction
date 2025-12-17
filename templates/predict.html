@@ -120,29 +120,7 @@
       </h2>
     </div>
   </div>
-     {% if improved_exam_score %}
-<div class="card highlight-card" style="margin-top:24px">
-
-  <h4>📈 Expected Exam Score (What-If Analysis)</h4>
-
-  <p>
-    Based on the current behaviour profile, the estimated exam score is:
-    <b>{{ current_exam_score }}</b>
-  </p>
-
-  <p>
-    If the student follows the recommended actions, the expected exam score
-    may improve to:
-    <b style="color:green">{{ improved_exam_score }}</b>
-  </p>
-
-  <p style="font-size:14px; color:var(--muted)">
-    *This score is an estimation derived from behavioural improvements
-    and historical student performance patterns.*
-  </p>
-
-</div>
-{% endif %}
+  
 
 
   <!-- CONTRIBUTION -->
@@ -183,6 +161,29 @@
     </ul>
   </div>
   {% endif %}
+
+</div>
+{% endif %}
+   {% if improved_exam_score %}
+<div class="card highlight-card" style="margin-top:24px">
+
+  <h4>📈 Expected Exam Score (What-If Analysis)</h4>
+
+  <p>
+    Based on the current behaviour profile, the estimated exam score is:
+    <b>{{ current_exam_score }}</b>
+  </p>
+
+  <p>
+    If the student follows the recommended actions, the expected exam score
+    may improve to:
+    <b style="color:green">{{ improved_exam_score }}</b>
+  </p>
+
+  <p style="font-size:14px; color:var(--muted)">
+    *This score is an estimation derived from behavioural improvements
+    and historical student performance patterns.*
+  </p>
 
 </div>
 {% endif %}
@@ -256,4 +257,5 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 {% endblock %}
+
 

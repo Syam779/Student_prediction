@@ -16,8 +16,7 @@
   <h4>🧾 Prediction Summary</h4>
   <p style="color:var(--muted); margin-bottom:16px;">
     Based on the selected behavioural inputs, the model predicts that this
-    student is <b>{{ prediction }}</b> with a confidence of
-    <b>{{ probability }}%</b>.
+    student is <b>{{ prediction }}</b>.
     The overall behaviour score indicates a
     <b>{{ risk_level }}</b> academic performance profile.
   </p>
@@ -89,24 +88,12 @@
 </div>
 
 <!-- =========================
-     RESULT SECTION (UPGRADED)
+     RESULT SECTION
 ========================= -->
 {% if prediction %}
 <div class="card result-card" id="result">
 
-  <!-- HEADER -->
   <h3 class="result-title">🧠 Behaviour Analysis Summary</h3>
-
-  <!-- MODEL CONFIDENCE -->
-  <p><b>Model Confidence:</b> {{ probability }}%</p>
-
-  <div class="progress-bar">
-    <div id="probBar"
-         class="progress-fill {{ 'good-bar' if probability >= 65 else 'bad-bar' }}"
-         data-value="{{ probability }}">
-      0%
-    </div>
-  </div>
 
   <!-- SCORE -->
   <div class="score-row" style="margin-top:24px">
@@ -120,8 +107,6 @@
       </h2>
     </div>
   </div>
-  
-
 
   <!-- CONTRIBUTION -->
   <h4 class="section-title">📌 Factor Contribution</h4>
@@ -162,28 +147,30 @@
   </div>
   {% endif %}
 
-</div>
-{% endif %}
-   {% if improved_exam_score %}
-<div class="card highlight-card" style="margin-top:24px">
+  <!-- WHAT-IF EXAM SCORE -->
+  {% if improved_exam_score %}
+  <div class="card highlight-card" style="margin-top:24px">
 
-  <h4>📈 Expected Exam Score (What-If Analysis)</h4>
+    <h4>📈 Expected Exam Score (What-If Analysis)</h4>
 
-  <p>
-    Based on the current behaviour profile, the estimated exam score is:
-    <b>{{ current_exam_score }}</b>
-  </p>
+    <p>
+      Based on the current behaviour profile, the estimated exam score is:
+      <b>{{ current_exam_score }}</b>
+    </p>
 
-  <p>
-    If the student follows the recommended actions, the expected exam score
-    may improve to:
-    <b style="color:green">{{ improved_exam_score }}</b>
-  </p>
+    <p>
+      If the student follows the recommended actions, the expected exam score
+      may improve to:
+      <b style="color:green">{{ improved_exam_score }}</b>
+    </p>
 
-  <p style="font-size:14px; color:var(--muted)">
-    *This score is an estimation derived from behavioural improvements
-    and historical student performance patterns.*
-  </p>
+    <p style="font-size:14px; color:var(--muted)">
+      *This score is an estimation derived from behavioural improvements
+      and historical student performance patterns.*
+    </p>
+
+  </div>
+  {% endif %}
 
 </div>
 {% endif %}
@@ -203,32 +190,6 @@ document.querySelectorAll(".slider-row").forEach(row => {
 });
 </script>
 
-<!-- =========================
-     PROGRESS BAR ANIMATION
-========================= -->
-<script>
-(function () {
-  const bar = document.getElementById("probBar");
-  if (!bar) return;
-
-  const target = parseFloat(bar.dataset.value);
-  let current = 0;
-  const step = target / 40;
-
-  const timer = setInterval(() => {
-    current += step;
-    if (current >= target) {
-      bar.style.width = target + "%";
-      bar.textContent = target + "%";
-      clearInterval(timer);
-    } else {
-      bar.style.width = current + "%";
-      bar.textContent = current.toFixed(1) + "%";
-    }
-  }, 20);
-})();
-</script>
-
 <script>
 document.querySelectorAll(".bar-fill").forEach(bar => {
   const percent = bar.dataset.percent;
@@ -236,26 +197,4 @@ document.querySelectorAll(".bar-fill").forEach(bar => {
 });
 </script>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".slider-row").forEach(row => {
-    const slider = row.querySelector("input[type=range]");
-    const badge = row.querySelector(".slider-value-badge");
-
-    if (!slider || !badge) return;
-
-    function update() {
-      badge.textContent = slider.value;
-      badge.classList.add("updated");
-      setTimeout(() => badge.classList.remove("updated"), 200);
-    }
-
-    slider.addEventListener("input", update);
-    update(); // initialize on load
-  });
-});
-</script>
-
 {% endblock %}
-
-

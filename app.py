@@ -10,23 +10,28 @@ import joblib, json, os
 app = Flask(__name__)
 
 # =========================
-# LOAD DATA ONCE
+# LOAD DATA
 # =========================
 DATA_PATH = os.path.join("data", "cleaned_dataset.csv")
 MODEL_DIR = "model"
 
 df = pd.read_csv(DATA_PATH)
 
-# =========================
-# LOAD MODEL & FEATURES
-# =========================
 model = joblib.load(os.path.join(MODEL_DIR, "high_performance_model.pkl"))
-
 with open(os.path.join(MODEL_DIR, "model_features.json")) as f:
     FEATURES = json.load(f)
 
 # =========================
-# HOME (ROOT PAGE)
+# HELPER
+# =========================
+def estimate_exam_score(behaviour_score):
+    low = df["FinalGrade"].quantile(0.10)
+    high = df["FinalGrade"].quantile(0.90)
+    est = low + (behaviour_score / 100) * (high - low)
+    return round(float(est), 1)
+
+# =========================
+# HOME
 # =========================
 @app.route("/")
 def home():
@@ -37,27 +42,18 @@ def home():
         "high_performers": int((df["FinalGrade"] >= 75).sum())
     }
     return render_template("home.html", kpi=kpi)
-# =========================
-# HELPER: ESTIMATE EXAM SCORE
-# =========================
-def estimate_exam_score(behaviour_score):
-    low = df["FinalGrade"].quantile(0.10)
-    high = df["FinalGrade"].quantile(0.90)
-    est = low + (behaviour_score / 100) * (high - low)
-    return round(float(est), 1)
 
 # =========================
-# PREDICTION (ML)
+# PREDICT
 # =========================
 @app.route("/predict", methods=["GET", "POST"])
 def predict():
     prediction = probability = score = risk_level = None
     advice = []
     breakdown = {}
-    benchmark = {}
     form_values = {}
 
-    current_exam_score = improved_exam_score = improved_score = None
+    current_exam_score = improved_exam_score = None
     avg = df.mean(numeric_only=True)
 
     if request.method == "POST":
@@ -71,7 +67,6 @@ def predict():
 
         X = np.array(data).reshape(1, -1)
         pred = model.predict(X)[0]
-
         prob = model.predict_proba(X)[0][1] if hasattr(model, "predict_proba") else 0
 
         prediction = "High Performer" if pred == 1 else "Not High Performer"
@@ -86,13 +81,6 @@ def predict():
 
         score = round(sum(breakdown.values()), 1)
 
-        risk_level = (
-            "Excellent" if score >= 80 else
-            "Good" if score >= 65 else
-            "Average" if score >= 50 else
-            "At Risk"
-        )
-
         if values["StudyHours"] < avg["StudyHours"]:
             advice.append("Increase weekly study hours.")
         if values["Attendance"] < 80:
@@ -104,7 +92,7 @@ def predict():
 
         improved_values = values.copy()
         if "Increase weekly study hours." in advice:
-            improved_values["StudyHours"] = min(values["StudyHours"] + 5, 40)
+            improved_values["StudyHours"] += 5
         if "Improve class attendance." in advice:
             improved_values["Attendance"] = max(values["Attendance"], 90)
         if "Submit assignments more consistently." in advice:
@@ -127,13 +115,11 @@ def predict():
         prediction=prediction,
         probability=probability,
         score=score,
-        risk_level=risk_level,
         breakdown=breakdown,
         advice=advice,
         form_values=form_values,
         current_exam_score=current_exam_score,
-        improved_exam_score=improved_exam_score,
-        improved_score=improved_score
+        improved_exam_score=improved_exam_score
     )
 
 # =========================
@@ -248,5 +234,6 @@ def trends():
 # =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
 
 

@@ -49,6 +49,7 @@ def predict():
     benchmark = {}
     form_values = {}
 
+    current_exam_score = improved_exam_score = improved_score = None
     avg = df.mean(numeric_only=True)
 
     if request.method == "POST":
@@ -63,10 +64,7 @@ def predict():
         X = np.array(data).reshape(1, -1)
         pred = model.predict(X)[0]
 
-        if hasattr(model, "predict_proba"):
-            prob = model.predict_proba(X)[0][1]
-        else:
-            prob = 0.0
+        prob = model.predict_proba(X)[0][1] if hasattr(model, "predict_proba") else 0
 
         prediction = "High Performer" if pred == 1 else "Not High Performer"
         probability = round(prob * 100, 2)
@@ -87,12 +85,6 @@ def predict():
             "At Risk"
         )
 
-        benchmark = {
-            "Study Hours": round(values["StudyHours"] - avg["StudyHours"], 1),
-            "Attendance": round(values["Attendance"] - avg["Attendance"], 1),
-            "Assignment Completion": round(values["AssignmentCompletion"] - avg["AssignmentCompletion"], 1),
-        }
-
         if values["StudyHours"] < avg["StudyHours"]:
             advice.append("Increase weekly study hours.")
         if values["Attendance"] < 80:
@@ -102,6 +94,26 @@ def predict():
         if values["StressLevel"] > 7:
             advice.append("Reduce stress through time management.")
 
+        improved_values = values.copy()
+        if "Increase weekly study hours." in advice:
+            improved_values["StudyHours"] = min(values["StudyHours"] + 5, 40)
+        if "Improve class attendance." in advice:
+            improved_values["Attendance"] = max(values["Attendance"], 90)
+        if "Submit assignments more consistently." in advice:
+            improved_values["AssignmentCompletion"] = max(values["AssignmentCompletion"], 85)
+        if "Reduce stress through time management." in advice:
+            improved_values["StressLevel"] = max(values["StressLevel"] - 2, 1)
+
+        improved_score = round(sum([
+            (improved_values["StudyHours"] / 20) * 25,
+            (improved_values["Attendance"] / 100) * 25,
+            (improved_values["AssignmentCompletion"] / 100) * 25,
+            ((10 - improved_values["StressLevel"]) / 10) * 25
+        ]), 1)
+
+        current_exam_score = estimate_exam_score(score)
+        improved_exam_score = estimate_exam_score(improved_score)
+
     return render_template(
         "predict.html",
         prediction=prediction,
@@ -109,9 +121,11 @@ def predict():
         score=score,
         risk_level=risk_level,
         breakdown=breakdown,
-        benchmark=benchmark,
         advice=advice,
-        form_values=form_values
+        form_values=form_values,
+        current_exam_score=current_exam_score,
+        improved_exam_score=improved_exam_score,
+        improved_score=improved_score
     )
 
 # =========================
@@ -226,3 +240,4 @@ def trends():
 # =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
